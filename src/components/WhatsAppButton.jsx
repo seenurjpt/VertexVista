@@ -23,14 +23,17 @@ const WhatsAppButton = () => {
   }, []);
 
   useEffect(() => {
-    // Show tooltip for first-time visitors
-    const hasSeenTooltip = localStorage.getItem('whatsapp-tooltip-seen');
+    // Show tooltip once per session
+    const hasSeenTooltip = sessionStorage.getItem('whatsapp-tooltip-seen');
     if (!hasSeenTooltip && isVisible) {
       const tooltipTimer = setTimeout(() => {
         setShowTooltip(true);
-        localStorage.setItem('whatsapp-tooltip-seen', 'true');
+        sessionStorage.setItem('whatsapp-tooltip-seen', 'true');
+        
         // Hide tooltip after 5 seconds
-        setTimeout(() => setShowTooltip(false), 5000);
+        setTimeout(() => {
+          setShowTooltip(false);
+        }, 5000);
       }, 2000);
 
       return () => clearTimeout(tooltipTimer);
@@ -55,20 +58,23 @@ const WhatsAppButton = () => {
           <AnimatePresence>
             {showTooltip && (
               <motion.div
-                initial={{ opacity: 0, x: 20, scale: 0.8 }}
-                animate={{ opacity: 1, x: 0, scale: 1 }}
-                exit={{ opacity: 0, x: 20, scale: 0.8 }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
                 className="absolute bottom-20 right-0 mb-2"
               >
-                <div className="relative bg-white rounded-2xl shadow-2xl p-4 max-w-xs border border-gray-200">
+                <div className="relative bg-white rounded-2xl shadow-xl p-4 w-64 border border-gray-200">
+                  {/* Close Button */}
                   <button
                     onClick={() => setShowTooltip(false)}
                     className="absolute -top-2 -right-2 w-6 h-6 bg-gray-800 text-white rounded-full flex items-center justify-center hover:bg-gray-900 transition-colors"
                   >
                     <HiX size={14} />
                   </button>
+                  
+                  {/* Content */}
                   <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center flex-shrink-0">
+                    <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center shrink-0">
                       <FaWhatsapp className="text-white" size={20} />
                     </div>
                     <div>
@@ -76,10 +82,11 @@ const WhatsAppButton = () => {
                         Need a quote?
                       </p>
                       <p className="text-xs text-gray-600">
-                        Chat with us on WhatsApp for instant support!
+                        Chat with us on WhatsApp!
                       </p>
                     </div>
                   </div>
+                  
                   {/* Arrow */}
                   <div className="absolute -bottom-2 right-6 w-4 h-4 bg-white border-r border-b border-gray-200 transform rotate-45"></div>
                 </div>
@@ -92,7 +99,7 @@ const WhatsAppButton = () => {
             onClick={handleClick}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
-            className="relative w-14 h-14 bg-gradient-to-r from-green-500 to-green-600 rounded-full shadow-2xl flex items-center justify-center group overflow-hidden"
+            className="relative w-14 h-14 bg-linear-to-r from-green-500 to-green-600 rounded-full shadow-2xl flex items-center justify-center group overflow-hidden"
             aria-label="Contact us on WhatsApp"
           >
             {/* Ripple Effect */}
